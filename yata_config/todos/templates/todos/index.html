@@ -20,7 +20,7 @@
         </h1>
 
         
-        <div id="todo_items" class="space-y-2">
+        <div id="todo_items" data-testid="todo_items" class="space-y-2">
             {% for item in todo_items %}
             
             {% include "todos/partial_todo.html" %}
