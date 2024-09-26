@@ -1,6 +1,6 @@
 from playwright.sync_api import Page, expect
 from django.urls import reverse 
-
+from todos import models
 import pytest
 
 def test_display_empty_list_on_first_load(live_server, page: Page):
@@ -37,3 +37,44 @@ def test_create_todo_item_shows_new_item(live_server, page: Page):
     page.get_by_label("Title:").fill("foo")
     page.get_by_role("button", name="Add").click()
     page.wait_for_selector("text=foo")
+
+
+def test_checkbox(live_server, page: Page):
+    items = [models.TodoItem.objects.create(
+        title=f"Test item {i}") for i in range(3)]
+    page.goto(reverse_url(live_server, "todos:index"))
+
+    middle_item = items[1]
+    middle_id = f"toggle_item_{middle_item.id}"
+    page.get_by_test_id(middle_id).check()
+    expect(page.get_by_test_id(middle_id)).to_be_checked()
+
+    middle_item.refresh_from_db()
+    assert middle_item.completed is True
+
+    items[0].refresh_from_db()
+    assert items[0].completed is False
+
+    items[2].refresh_from_db()
+    assert items[2].completed is False
+
+
+def test_checkbox_loads_correctly(live_server, page: Page):
+    item = models.TodoItem.objects.create(title="Test item", completed=True)
+    page.goto(reverse_url(live_server, "todos:index"))
+    checkbox_id = f"toggle_item_{item.id}"
+    expect(page.get_by_test_id(checkbox_id)).to_be_checked()
+
+
+def test_delete_item(live_server, page: Page):
+    item = models.TodoItem.objects.create(title="Test item", completed=True)
+    
+    page.goto(reverse_url(live_server, "todos:index"))
+
+    delete_id = f"delete_item_{item.id}"
+    page.get_by_test_id(delete_id).click()
+
+    expect(page.get_by_test_id("todo_items")).not_to_contain_text("Test item")
+
+    with pytest.raises(models.TodoItem.DoesNotExist):
+        models.TodoItem.objects.get(id=item.id)
