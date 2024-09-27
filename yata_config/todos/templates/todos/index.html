@@ -6,18 +6,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Things to do</title>
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- htmx -->
     <script src="https://unpkg.com/htmx.org@1.9.11"
         integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0"
         crossorigin="anonymous"></script>
+    <!-- custom js -->
     <script src="{% static 'todos/utils.js' %}"></script>
+    <!-- Alpine.js -->
+    <script src="//unpkg.com/alpinejs" defer></script>
 </head>
 
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-4 pt-4">
 
-        <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">Things to do
-        </h1>
+        <div class="flex items-center justify-between p-6 border-b mb-5">
+            <div class="hidden lg:block" x-data="{open: true}">
+                <a href="/" class="text-orange-500 font-bold text-3xl">YATA!</a>
+                <nav class="gap-x-4 flex">
+    
+                    <a href="#"
+                        class="bg-orange-600 hover:bg-orange-700 text-gray-100 font-bold rounded-full pt-1 pb-1 pl-3 pr-3">About</a>
+                    <a href="#"
+                        class="bg-orange-600 hover:bg-orange-700 text-gray-100 font-bold rounded-full pt-1 pb-1 pl-3 pr-3">Contact</a>
+                    <a href="#"
+                        class="bg-orange-600 hover:bg-orange-700 text-gray-100 font-bold rounded-full pt-1 pb-1 pl-3 pr-3">Whatever</a>
+                </nav>
+            </div>
+
+            <div class="block lg:hidden" x-data="{open:false}">
+                <button
+                    class="bg-orange-600 hover:bg-orange-700 text-gray-100 font-bold rounded-full pt-1 pb-1 pl-3 pr-3"
+                    @click="open = ! open">Menu
+                    🔽</button>
+                <div x-show="open" >
+                     <nav class="flex flex-col text-left gap-2">
+                        <a href="#" class="text-gray-700 font-bold rounded-full pt-1 pb-1 pl-3 pr-3">About</a>
+                        <a href="#" class="text-gray-700 font-bold rounded-full pt-1 pb-1 pl-3 pr-3">Contact</a>
+                        <a href="#" class="text-gray-700 font-bold rounded-full pt-1 pb-1 pl-3 pr-3">Whatever</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
 
         
         <div id="todo_items" data-testid="todo_items" class="space-y-2">
